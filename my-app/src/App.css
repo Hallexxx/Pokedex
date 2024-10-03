@@ -1,0 +1,154 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+@import url(./set.css);
+
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+html{
+  background-size: cover;
+  height: 100vh;
+  overflow-x: hidden;
+}
+
+link[rel="icon"] {
+  border-radius: 50%;
+  overflow: hidden;
+  width: 32px; /* Adjust the size as needed */
+  height: 32px; /* Adjust the size as needed */
+}
+
+/*************************************** NAVBAR ******************************************/
+
+nav,
+.nav-list {
+  display: flex;
+}
+
+nav {
+  padding: 15px;
+  justify-content: space-between;
+  display: flex;
+  align-items: first baseline;
+  height: 17vh;
+}
+
+nav .menu-deroulant:hover {
+  color: grey;
+  text-decoration: underline;
+  text-underline-offset: 1vh;
+  text-decoration-color: rgb(181, 181, 181);
+}
+
+.nav-list {
+  gap: 2rem;
+  list-style: none;
+  font-size: 1.5rem;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+  text-decoration-color: white;
+}
+
+.logo {
+  font-size: 2rem;
+}
+
+@media screen  and (max-width: 970px) {
+  .logo {
+    font-size: 1.5rem;
+  }
+
+  .nav-list {
+    gap: 2rem;
+    list-style: none;
+    font-size: 1.25rem;
+  }
+}
+
+.logo:hover {
+  cursor: default;
+}
+
+#home li{
+  list-style: none;
+}
+
+#home {
+  max-width: 1000px;
+  margin: 5% auto;
+  padding: 20px;
+}
+
+.navbar > ul > li > a {
+  transform: translate(-50%, -50%);
+}
+
+.menu-deroulant {
+  position: relative;
+}
+
+.sous {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: max-content;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+.sous li {
+  list-style: none;
+  margin: 1vh 0 0 0;
+}
+
+@keyframes apparitionSousMenu {
+  0% {
+  }
+  30% {
+  }
+  100% {
+      max-height: 50em;
+  }
+}
+
+.menu-deroulant:hover > .sous {
+  animation: apparitionSousMenu 1s forwards;
+}
+
+.hover-underline-animation {
+  position: relative;
+}
+
+.hover-underline-animation:after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: blue;
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+
+.sous a:hover .hover-underline-animation:after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+
+@media screen  and (max-width: 810px) {
+  .nav-list{
+    display: none;
+  }
+}
