@@ -1,0 +1,50 @@
+const [pokemons, setPokemons] = useState([]);
+const [types, setTypes] = useState([]);
+const [loading, setLoading] = useState(true);
+
+const translatedTypes = pokemon.types.map(type => {
+    const translatedType = types.find(t => t.en === type || t.fr === type || t.es === type);
+    return translatedType ? translatedType[language] : type;
+});
+
+useEffect(() => {
+    // Fonction pour récupérer les Pokémon
+    const fetchPokemons = async () => {
+        try {
+            const response = await axios.get('https://pokedex-jgabriele.vercel.app/pokemons.json');
+            setPokemons(response.data);
+        } catch (error) {
+            console.error('Erreur lors de la récupération des Pokémon:', error);
+        } finally {
+            setLoading(false); // Fin du chargement
+        }
+    };
+
+    // Fonction pour récupérer les types
+    const fetchTypes = async () => {
+        try {
+            const response = await axios.get('https://pokedex-jgabriele.vercel.app/types.json');
+            setTypes(response.data);
+        } catch (error) {
+            console.error('Erreur lors de la récupération des types:', error);
+        }
+    };
+
+    fetchPokemons();
+    fetchTypes();
+}, []); // Cette fonction sera exécutée une seule fois lors du premier rendu
+
+// Filtrer les Pokémon selon le texte de recherche
+const filteredPokemons = pokemons.filter(pokemon =>
+    pokemon.name.toLowerCase().includes(searchText.toLowerCase())
+);
+
+// Loader pendant le chargement des données
+if (loading) {
+    return (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <CircularProgress />
+        </Box>
+    );
+}
+  
