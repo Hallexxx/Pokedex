@@ -1,50 +1,96 @@
-const [pokemons, setPokemons] = useState([]);
-const [types, setTypes] = useState([]);
-const [loading, setLoading] = useState(true);
 
-const translatedTypes = pokemon.types.map(type => {
-    const translatedType = types.find(t => t.en === type || t.fr === type || t.es === type);
-    return translatedType ? translatedType[language] : type;
-});
 
-useEffect(() => {
-    // Fonction pour récupérer les Pokémon
-    const fetchPokemons = async () => {
-        try {
-            const response = await axios.get('https://pokedex-jgabriele.vercel.app/pokemons.json');
-            setPokemons(response.data);
-        } catch (error) {
-            console.error('Erreur lors de la récupération des Pokémon:', error);
-        } finally {
-            setLoading(false); // Fin du chargement
-        }
-    };
 
-    // Fonction pour récupérer les types
-    const fetchTypes = async () => {
-        try {
-            const response = await axios.get('https://pokedex-jgabriele.vercel.app/types.json');
-            setTypes(response.data);
-        } catch (error) {
-            console.error('Erreur lors de la récupération des types:', error);
-        }
-    };
+<div>
+    <Navbar language={language} onLanguageChange={handleLanguageChange}/>
 
-    fetchPokemons();
-    fetchTypes();
-}, []); // Cette fonction sera exécutée une seule fois lors du premier rendu
+    <Box sx={{ padding: 2, display: 'flex', justifyContent: 'center' }}>
+        <TextField variant="outlined" label="Rechercher un Pokémon" value={searchText} onChange={handleSearchChange} sx={{ width: '80%', marginRight: 2 }}/>
+        <IconButton color="primary" onClick={handleSearchSubmit}>
+            <SearchIcon/>
+        </IconButton>
+    </Box>
 
-// Filtrer les Pokémon selon le texte de recherche
-const filteredPokemons = pokemons.filter(pokemon =>
-    pokemon.name.toLowerCase().includes(searchText.toLowerCase())
-);
+    <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+        {isPending && <div>Loading....</div>}
+        {error && <div>{error}</div>}
+        {data && data.map((pokemon) => (
+            <PokemonCard key={pokemon.id} pokemon={pokemon} language={language} />
+        ))}
+    </Box>
+</div>
 
-// Loader pendant le chargement des données
-if (loading) {
-    return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-            <CircularProgress />
-        </Box>
-    );
+const [language, setLanguage] = useState('en');
+const [searchText, setSearchText] = useState('');
+const [url, setUrl] = useState("https://pokedex-jgabriele.vercel.app/pokemons.json");
+const { data, isPending, error } = useFetch(url);
+
+
+const handleLanguageChange = (lang) => {
+    setLanguage(lang);
+};
+
+const handleSearchChange = (e) => {
+    setSearchText(e.target.value);
+};
+
+const handleSearchSubmit = () => {
+    console.log("Rechercher Pokémon:", searchText);
+};
+
+function Pokemontype(){
+  const [url, setUrl] = useState("https://pokedex-jgabriele.vercel.app/types.json");
+  const { data, isPending, error } = useFetch(url);
+  <Box sx={{ marginTop: 1 }}>
+    {data && data.map((pokemon) => (
+        <Chip key={pokemon.types} label={pokemon.types} sx={{ margin: '2px' }} />
+    ))}
+  </Box>
 }
-  
+
+const PokemonCard = ({ pokemon, langage }) => {
+  return (
+    <Card sx={{ borderRadius: '16px', boxShadow: 3, width: 200, margin: 2 }}>
+      <CardContent sx={{ textAlign: 'center' }}>
+        <Typography variant="h6">{pokemon.names[langage]}</Typography>
+        <img src={pokemon.image} alt={pokemon.names[langage]} style={{ width: '100%', borderRadius: '8px' }}/>
+        <Pokemontype />
+      </CardContent>
+    </Card>
+  );
+};
+
+
+
+
+
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
+import { useFetch } from "../hooks/useFetch";
+
+function Pokemontype(){
+  const [url, setUrl] = useState("https://pokedex-jgabriele.vercel.app/types.json");
+  const { data, isPending, error } = useFetch(url);
+  console.log(data); 
+  <Box sx={{ marginTop: 1 }}>
+    {/* {data && data.map((pokemon) => (
+        <Chip key={pokemon.types} label={pokemon.types} sx={{ margin: '2px' }} />
+    ))} */}
+  </Box>
+}
+
+const PokemonCard = ({ pokemon, langage }) => {
+  return (
+    <Card sx={{ borderRadius: '16px', boxShadow: 3, width: 200, margin: 2 }}>
+      <CardContent sx={{ textAlign: 'center' }}>
+        <Typography variant="h6">{pokemon.names[langage]}</Typography>
+        <img src={pokemon.image} alt={pokemon.names[langage]} style={{ width: '100%', borderRadius: '8px' }}/>
+        <Pokemontype />
+      </CardContent>
+    </Card>
+  );
+};
+
+
+
+export default PokemonCard;

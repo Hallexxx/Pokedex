@@ -34,6 +34,10 @@ class Navbar extends React.Component {
               <MenuItem value="en">English</MenuItem>
               <MenuItem value="fr">Français</MenuItem>
               <MenuItem value="es">Español</MenuItem>
+              <MenuItem value="ja">Japonais</MenuItem>
+              <MenuItem value="it">Italien</MenuItem>
+              <MenuItem value="de">Allemands</MenuItem>
+              <MenuItem value="roomaji">Les roumains</MenuItem>
             </Select>
           </Box>
         </Toolbar>

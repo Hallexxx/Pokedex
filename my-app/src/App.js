@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import Navbar from './component/navbar';
 import PokemonCard from './component/pokemon_card';
 import { Box, TextField, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import axios from 'axios';
+import { useFetch } from "./hooks/useFetch";
 
 function App() {
     const [language, setLanguage] = useState('en');
     const [searchText, setSearchText] = useState('');
+    const [url, setUrl] = useState("https://pokedex-jgabriele.vercel.app/pokemons.json");
+    const { data, isPending, error } = useFetch(url);
     
   
     const handleLanguageChange = (lang) => {
@@ -22,25 +23,6 @@ function App() {
     const handleSearchSubmit = () => {
         console.log("Rechercher Pokémon:", searchText);
     };
-  
-    const pokemons = [
-        {
-            name: "Pikachu",
-            image: "https://example.com/pikachu.png",
-            types: ["Electric"]
-        },
-        {
-            name: "Charmander",
-            image: "https://example.com/charmander.png",
-            types: ["Fire"]
-        },
-        {
-            name: "Bulbasaur",
-            image: "https://example.com/bulbasaur.png",
-            types: ["Grass", "Poison"]
-        },
-        // Ajoutez d'autres Pokémon ici
-    ];
     
     return (
       <div>
@@ -54,8 +36,10 @@ function App() {
         </Box>
 
         <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-            {pokemons.map((pokemon) => (
-                <PokemonCard key={pokemon.name} pokemon={pokemon} />
+            {isPending && <div>Loading....</div>}
+            {error && <div>{error}</div>}
+            {data && data.map((pokemon) => (
+                <PokemonCard key={pokemon.id} pokemon={pokemon} langage={language} />
             ))}
         </Box>
       </div>
