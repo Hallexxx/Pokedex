@@ -1,11 +1,14 @@
+// src/component/PokemonCard.js
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
 import { useFetch } from '../hooks/useFetch';
 
 const PokemonCard = ({ pokemon, language }) => {
   const [typesData, setTypesData] = useState([]);
   const { data: fetchedTypes } = useFetch('https://pokedex-jgabriele.vercel.app/types.json');
-
+  const navigate = useNavigate(); // Initialize the useNavigate hook
+  
   useEffect(() => {
     if (fetchedTypes && typeof fetchedTypes === 'object') {
       const typesArray = Object.entries(fetchedTypes);
@@ -13,14 +16,13 @@ const PokemonCard = ({ pokemon, language }) => {
       const pokemonTypes = pokemon.types.map((typeId) => {
         const foundType = typesArray.find(([key]) => key === typeId);
         if (foundType) {
-          const translations = foundType[1].translations;
+          const traductions = foundType[1].translations;
 
-          const translatedName =
-            translations[language] || translations['en'] || translations['fr'] || Object.values(translations)[0];
+          const translatedName = traductions[language] || traductions['en'] || traductions['fr'] || Object.values(traductions)[0];
 
           return {
-            name: translatedName, 
-            color: foundType[1].backgroundColor,  
+            name: translatedName,
+            color: foundType[1].backgroundColor,
           };
         }
         return null;
@@ -34,8 +36,16 @@ const PokemonCard = ({ pokemon, language }) => {
 
   const pokemonName = pokemon.names && (pokemon.names[language] || pokemon.names['en'] || pokemon.names['fr'] || Object.values(pokemon.names)[0]);
 
+  // Fonction pour naviguer vers les détails du Pokémon
+  const handleCardClick = () => {
+    navigate(`/pokemon/${pokemonName}`);
+  };
+
   return (
-    <Card sx={{ borderRadius: '16px', boxShadow: 3, width: 200, margin: 2 }}>
+    <Card
+      sx={{ borderRadius: '16px', boxShadow: 3, width: 200, margin: 2 }}
+      onClick={handleCardClick} // Ajout de l'événement pour cliquer sur la carte
+    >
       <CardContent sx={{ textAlign: 'center' }}>
         <Typography variant="h6">{pokemonName}</Typography>
         <img src={pokemon.image} alt={pokemonName} style={{ width: '100%', borderRadius: '8px' }} />

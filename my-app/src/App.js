@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState } from 'react';
 import Navbar from './component/navbar';
 import PokemonCard from './component/pokemon_card';
