@@ -15,6 +15,7 @@ const LanguageSelector = ({ language, onLanguageChange }) => {
         <MenuItem value="ja">Japonais</MenuItem>
         <MenuItem value="it">Italien</MenuItem>
         <MenuItem value="de">Allemand</MenuItem>
+        <MenuItem value="roomaji">Les roumains</MenuItem>
       </Select>
     </Box>
   );

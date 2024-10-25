@@ -4,10 +4,8 @@ import { Box, Typography, Button, Dialog, DialogTitle, DialogContent } from '@mu
 import { useFetch } from '../hooks/useFetch';
 
 const PokemonDetail = ({ language }) => {
-  const { pokemonName } = useParams(); // Récupère le nom du Pokémon depuis l'URL
+  const { pokemonName } = useParams(); 
   const [openDialog, setOpenDialog] = useState(false);
-
-  // Utilisation de l'URL pour récupérer tous les Pokémon
   const [url] = useState('https://pokedex-jgabriele.vercel.app/pokemons.json');
   const { data: pokemons, isPending, error } = useFetch(url);
 
@@ -62,7 +60,7 @@ const PokemonDetail = ({ language }) => {
             )}
           </ul>
         </DialogContent>
-      </Dialog>
+      </Dialog> 
     </Box>
   );
 };
