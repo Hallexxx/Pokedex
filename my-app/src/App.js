@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './component/navbar';
 import PokemonCard from './component/pokemon_card';
+import PokemonDetail from './component/pokemon_details';
 import { Box, TextField } from '@mui/material';
 import { useFetch } from './hooks/useFetch';
 
@@ -10,9 +12,8 @@ function App() {
   const { data, isPending, error } = useFetch(url);
 
   const [inputText, setInputText] = useState('');
-  let inputHandler = (e) => {
-    var lowerCase = e.target.value.toLowerCase();
-    setInputText(lowerCase);
+  const inputHandler = (e) => {
+    setInputText(e.target.value.toLowerCase());
   };
 
   const handleLanguageChange = (lang) => {
@@ -24,27 +25,35 @@ function App() {
   );
 
   return (
-    <div>
+    <BrowserRouter>
       <Navbar language={language} onLanguageChange={handleLanguageChange} />
 
-      <Box sx={{ padding: 2, display: 'flex', justifyContent: 'center' }}>
-        <TextField
-          variant="outlined"
-          label="Rechercher un Pokémon"
-          onChange={inputHandler}
-          sx={{ width: '80%', marginRight: 2 }}
-        />
-      </Box>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Box sx={{ padding: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <TextField
+                variant="outlined"
+                label="Rechercher un Pokémon"
+                onChange={inputHandler}
+                sx={{ width: '80%', marginBottom: 2 }}
+              />
 
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-        {isPending && <div>Loading....</div>}
-        {error && <div>{error}</div>}
-        {filteredData &&
-          filteredData.map((pokemon) => (
-            <PokemonCard key={pokemon.id} pokemon={pokemon} language={language} />
-          ))}
-      </Box>
-    </div>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+                {isPending && <div>Loading....</div>}
+                {error && <div>{error}</div>}
+                {filteredData &&
+                  filteredData.map((pokemon) => (
+                    <PokemonCard key={pokemon.id} pokemon={pokemon} language={language} />
+                  ))}
+              </Box>
+            </Box>
+          }
+        />
+        <Route path="/pokemon/:pokemonName" element={<PokemonDetail />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
