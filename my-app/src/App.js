@@ -29,7 +29,7 @@ function App() {
   const handleLanguageChange = (lang) => setLanguage(lang);
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/">
       <Navbar language={language} onLanguageChange={handleLanguageChange} />
       <Routes>
         <Route
