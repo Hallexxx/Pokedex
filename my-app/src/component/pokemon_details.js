@@ -1,45 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Typography, Button, Dialog, DialogTitle, DialogContent } from '@mui/material';
-import { useFetch } from '../hooks/useFetch';
+import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, Chip } from '@mui/material';
 
-const PokemonDetail = ({ language }) => {
+const PokemonDetail = ({ pokemons, types, language }) => {
   const { pokemonName } = useParams();
-  const [openDialog, setOpenDialog] = useState(false);
-  const [url] = useState('https://pokedex-jgabriele.vercel.app/pokemons.json');
-  const { data: pokemons, isPending, error } = useFetch(url);
   const [selectedPokemon, setSelectedPokemon] = useState(null);
-  const [loadingMessage, setLoadingMessage] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoadingMessage(false);
-    }, 1000);
-
-    if (pokemons && Array.isArray(pokemons)) {
-      const foundPokemon = pokemons.find((p) => {
-        return Object.values(p.names).some(
-          (name) => name.toLowerCase().trim() === pokemonName.toLowerCase().trim()
-        );
-      });
-
-      if (foundPokemon) {
-        setSelectedPokemon(foundPokemon);
-      } 
-    }
-    return () => clearTimeout(timer);
-  }, [pokemons, pokemonName]);
+  const [typesData, setTypesData] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
 
   const handleDialogOpen = () => setOpenDialog(true);
   const handleDialogClose = () => setOpenDialog(false);
 
-  if (isPending || loadingMessage) {
-    return <div>Chargement en cours...</div>;
-  }
+  // Trouve le Pokémon sélectionné
+  useEffect(() => {
+    if (pokemons) {
+      const foundPokemon = pokemons.find((p) =>
+        Object.values(p.names).some(
+          (name) => name.toLowerCase() === pokemonName.toLowerCase()
+        )
+      );
+      setSelectedPokemon(foundPokemon || null);
+    }
+  }, [pokemons, pokemonName]);
 
-  if (error) {
-    return <div>Erreur: {error}</div>;
-  }
+  // Prépare les données des types du Pokémon
+  useEffect(() => {
+    if (selectedPokemon && types) {
+      const typesArray = Object.entries(types);
+      const pokemonTypes = selectedPokemon.types.map((typeId) => {
+        const foundType = typesArray.find(([key]) => key === typeId);
+        if (foundType) {
+          const traductions = foundType[1].translations;
+          const translatedName =
+            traductions[language] || traductions['en'] || traductions['fr'] || Object.values(traductions)[0];
+          return {
+            name: translatedName,
+            color: foundType[1].backgroundColor,
+          };
+        }
+        return null;
+      }).filter((type) => type !== null);
+      setTypesData(pokemonTypes);
+    }
+  }, [selectedPokemon, types, language]);
 
   if (!selectedPokemon) {
     return <div>Pokémon nommé "{pokemonName}" introuvable.</div>;
@@ -78,9 +81,20 @@ const PokemonDetail = ({ language }) => {
         <Typography variant="body1">{weightInKg} kg</Typography>
         <Typography variant="body1">{heightInMeters} m</Typography>
         
-        <Typography variant="body1" sx={{ marginTop: 2 }}>
-          {selectedPokemon.types.join(', ')}
-        </Typography>
+        <Box sx={{ marginTop: 2 }}>
+          {typesData.map((type, index) => (
+            <Chip
+              key={index}
+              label={type.name}
+              sx={{
+                margin: '4px',
+                backgroundColor: type.color,
+                color: 'white',
+                textTransform: 'capitalize',
+              }}
+            />
+          ))}
+        </Box>
 
         <Button 
           variant="contained" 
