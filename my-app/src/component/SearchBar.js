@@ -7,7 +7,7 @@ const SearchBar = ({ onSearchChange }) => {
         <TextField
           variant="outlined"
           label="Rechercher un Pokémon"
-          onChange={(e) => onSearchChange(e.target.value)}
+          onChange={onSearchChange}
           sx={{ width: '80%', marginRight: 2 }}
         />
       </Box>
