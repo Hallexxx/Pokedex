@@ -1,52 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './component/navbar';
-import PokemonCard from './component/pokemon_card';
 import PokemonDetail from './component/pokemon_details';
 import PokemonList from './component/pokemon_list';
+import FilterByType from './component/FilterByType';
 import SearchBar from './component/SearchBar';
 import { Box } from '@mui/material';
 import { useFetch } from './hooks/useFetch';
+import { LanguageContext } from './contexts/LanguageContext';
 
 function App() {
-  const [language, setLanguage] = useState('en');
+  const { language } = useContext(LanguageContext); // Récupérer la langue via le contexte
   const [urlPokemons] = useState('https://pokedex-jgabriele.vercel.app/pokemons.json');
   const [urlTypes] = useState('https://pokedex-jgabriele.vercel.app/types.json');
-  
-  // Fetch pokemons et types
+
   const { data: pokemons, isPending: pokemonsPending, error: pokemonsError } = useFetch(urlPokemons);
   const { data: types, isPending: typesPending, error: typesError } = useFetch(urlTypes);
 
   const [inputText, setInputText] = useState('');
-  const inputHandler = (e) => {
-    setInputText(e.target.value.toLowerCase());
-  };
-  
-  const filteredPokemons = pokemons && pokemons.filter((pokemon) =>
-    pokemon.names[language].toLowerCase().includes(inputText)
-  );
+  const inputHandler = (e) => setInputText(e.target.value.toLowerCase());
 
-  const handleLanguageChange = (lang) => setLanguage(lang);
+  const [selectedTypes, setSelectedTypes] = useState([]);
+  const [isAndMode, setIsAndMode] = useState(false);
+
+  const filteredPokemons = pokemons?.filter((pokemon) => {
+    const matchesName = pokemon.names[language]?.toLowerCase().includes(inputText);
+    const matchesTypes =
+      selectedTypes.length === 0 ||
+      (isAndMode
+        ? selectedTypes.every((typeId) => pokemon.types.includes(typeId))
+        : selectedTypes.some((typeId) => pokemon.types.includes(typeId)));
+
+    return matchesName && matchesTypes;
+  });
 
   return (
     <BrowserRouter basename="/">
-      <Navbar language={language} onLanguageChange={handleLanguageChange} />
+      <Navbar />
       <Routes>
         <Route
           path="/"
           element={
             <Box sx={{ padding: 2 }}>
               <SearchBar onSearchChange={inputHandler} />
+              <FilterByType
+                types={types || []}
+                selectedTypes={selectedTypes}
+                onTypeChange={setSelectedTypes}
+                isAndMode={isAndMode}
+                onModeChange={setIsAndMode}
+              />
               <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
                 {(pokemonsPending || typesPending) && <div>Loading...</div>}
                 {pokemonsError && <div>{pokemonsError}</div>}
                 {typesError && <div>{typesError}</div>}
                 {filteredPokemons && (
-                  <PokemonList
-                    data={filteredPokemons}
-                    types={types}
-                    language={language}
-                  />
+                  <PokemonList data={filteredPokemons} types={types} />
                 )}
               </Box>
             </Box>
@@ -54,9 +63,7 @@ function App() {
         />
         <Route
           path="/pokemon/:pokemonName"
-          element={
-            <PokemonDetail pokemons={pokemons} types={types} language={language} />
-          }
+          element={<PokemonDetail pokemons={pokemons} types={types} />}
         />
       </Routes>
     </BrowserRouter>

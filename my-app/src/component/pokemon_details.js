@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useContext, useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, Chip } from '@mui/material';
+import { LanguageContext } from '../contexts/LanguageContext';
 
-const PokemonDetail = ({ pokemons, types, language }) => {
+const PokemonDetail = ({ pokemons, types }) => {
+  const { language } = useContext(LanguageContext);
   const { pokemonName } = useParams();
+  const navigate = useNavigate();
   const [selectedPokemon, setSelectedPokemon] = useState(null);
   const [typesData, setTypesData] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
-
-  const handleDialogOpen = () => setOpenDialog(true);
-  const handleDialogClose = () => setOpenDialog(false);
 
   // Trouve le Pokémon sélectionné
   useEffect(() => {
@@ -44,6 +44,20 @@ const PokemonDetail = ({ pokemons, types, language }) => {
     }
   }, [selectedPokemon, types, language]);
 
+  // Fonction de navigation vers le Pokémon suivant
+  const navigateToNextPokemon = () => {
+    const currentIndex = pokemons.indexOf(selectedPokemon);
+    const nextIndex = (currentIndex + 1) % pokemons.length; // Si c'est le dernier Pokémon, retour au premier
+    navigate(`/pokemon/${pokemons[nextIndex].names[language]}`);
+  };
+
+  // Fonction de navigation vers le Pokémon précédent
+  const navigateToPrevPokemon = () => {
+    const currentIndex = pokemons.indexOf(selectedPokemon);
+    const prevIndex = (currentIndex - 1 + pokemons.length) % pokemons.length; // Si c'est le premier Pokémon, va au dernier
+    navigate(`/pokemon/${pokemons[prevIndex].names[language]}`);
+  };
+
   if (!selectedPokemon) {
     return <div>Pokémon nommé "{pokemonName}" introuvable.</div>;
   }
@@ -52,35 +66,48 @@ const PokemonDetail = ({ pokemons, types, language }) => {
   const weightInKg = (selectedPokemon.weight / 10).toFixed(1);
 
   return (
-    <Box 
-      sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh', 
-        backgroundColor: '#f0f0f0' 
-      }}
-    >
-      <Box 
-        sx={{ 
-          backgroundColor: 'white', 
-          borderRadius: 2, 
-          boxShadow: 3, 
-          padding: 4, 
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f0f0f0' }}>
+      <Box
+        sx={{
+          backgroundColor: 'white',
+          borderRadius: 2,
+          boxShadow: 3,
+          padding: 4,
           textAlign: 'center',
+          position: 'relative',
+          width: '350px',
+          transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+          '&:hover': {
+            transform: 'scale(1.05)', // Animation au survol
+            boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.2)',
+          },
         }}
       >
-        <Typography variant="h4" gutterBottom>
-          {selectedPokemon.names[language] || pokemonName}
+        {/* Affichage de l'ID en haut à gauche */}
+        <Typography sx={{ position: 'absolute', top: '10px', left: '10px', fontWeight: 'bold' }}>
+          #{selectedPokemon.id}
         </Typography>
-        <img 
-          src={selectedPokemon.image} 
-          alt={selectedPokemon.names[language]} 
-          style={{ width: '300px', height: 'auto', marginBottom: '16px' }} 
+
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
+          <Button onClick={navigateToPrevPokemon} sx={{ backgroundColor: 'transparent', color: 'black', fontSize: '2rem' }}>
+            ←
+          </Button>
+          <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
+            {selectedPokemon.names[language] || pokemonName}
+          </Typography>
+          <Button onClick={navigateToNextPokemon} sx={{ backgroundColor: 'transparent', color: 'black', fontSize: '2rem' }}>
+            →
+          </Button>
+        </Box>
+
+        <img
+          src={selectedPokemon.image}
+          alt={selectedPokemon.names[language]}
+          style={{ width: '300px', height: 'auto', marginBottom: '16px' }}
         />
         <Typography variant="body1">{weightInKg} kg</Typography>
         <Typography variant="body1">{heightInMeters} m</Typography>
-        
+
         <Box sx={{ marginTop: 2 }}>
           {typesData.map((type, index) => (
             <Chip
@@ -96,30 +123,16 @@ const PokemonDetail = ({ pokemons, types, language }) => {
           ))}
         </Box>
 
-        <Button 
-          variant="contained" 
-          color="primary" 
-          onClick={handleDialogOpen} 
-          sx={{ marginTop: 2, width: '100%' }}
-        >
+        <Button variant="contained" color="primary" onClick={() => setOpenDialog(true)} sx={{ marginTop: 2, width: '100%' }}>
           Voir les Moves
         </Button>
 
-        <Dialog 
-          open={openDialog} 
-          onClose={handleDialogClose} 
-          maxWidth="sm"
-          fullWidth 
-        >
-          <DialogTitle>
-            Moves de {selectedPokemon.names[language] || pokemonName}
-          </DialogTitle>
+        <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
+          <DialogTitle>Moves de {selectedPokemon.names[language] || pokemonName}</DialogTitle>
           <DialogContent>
             <ul>
               {selectedPokemon.moves && selectedPokemon.moves.length > 0 ? (
-                selectedPokemon.moves.map((move, index) => (
-                  <li key={index}>{move}</li>
-                ))
+                selectedPokemon.moves.map((move, index) => <li key={index}>{move}</li>)
               ) : (
                 <li>Aucun move disponible</li>
               )}
