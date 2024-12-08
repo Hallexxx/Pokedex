@@ -10,7 +10,7 @@ import { useFetch } from './hooks/useFetch';
 import { LanguageContext } from './contexts/LanguageContext';
 
 function App() {
-  const { language } = useContext(LanguageContext); // Récupérer la langue via le contexte
+  const { language } = useContext(LanguageContext);
   const [urlPokemons] = useState('https://pokedex-jgabriele.vercel.app/pokemons.json');
   const [urlTypes] = useState('https://pokedex-jgabriele.vercel.app/types.json');
 
@@ -42,14 +42,16 @@ function App() {
           path="/"
           element={
             <Box sx={{ padding: 2 }}>
-              <SearchBar onSearchChange={inputHandler} />
-              <FilterByType
-                types={types || []}
-                selectedTypes={selectedTypes}
-                onTypeChange={setSelectedTypes}
-                isAndMode={isAndMode}
-                onModeChange={setIsAndMode}
-              />
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <SearchBar onSearchChange={inputHandler} />
+                  <FilterByType
+                    types={types || []}
+                    selectedTypes={selectedTypes}
+                    onTypeChange={setSelectedTypes}
+                    isAndMode={isAndMode}
+                    onModeChange={setIsAndMode}
+                  />
+              </Box>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
                 {(pokemonsPending || typesPending) && <div>Loading...</div>}
                 {pokemonsError && <div>{pokemonsError}</div>}

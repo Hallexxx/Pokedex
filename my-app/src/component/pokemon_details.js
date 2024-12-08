@@ -11,7 +11,6 @@ const PokemonDetail = ({ pokemons, types }) => {
   const [typesData, setTypesData] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
 
-  // Trouve le Pokémon sélectionné
   useEffect(() => {
     if (pokemons) {
       const foundPokemon = pokemons.find((p) =>
@@ -23,7 +22,6 @@ const PokemonDetail = ({ pokemons, types }) => {
     }
   }, [pokemons, pokemonName]);
 
-  // Prépare les données des types du Pokémon
   useEffect(() => {
     if (selectedPokemon && types) {
       const typesArray = Object.entries(types);
@@ -44,17 +42,15 @@ const PokemonDetail = ({ pokemons, types }) => {
     }
   }, [selectedPokemon, types, language]);
 
-  // Fonction de navigation vers le Pokémon suivant
   const navigateToNextPokemon = () => {
     const currentIndex = pokemons.indexOf(selectedPokemon);
-    const nextIndex = (currentIndex + 1) % pokemons.length; // Si c'est le dernier Pokémon, retour au premier
+    const nextIndex = (currentIndex + 1) % pokemons.length; 
     navigate(`/pokemon/${pokemons[nextIndex].names[language]}`);
   };
 
-  // Fonction de navigation vers le Pokémon précédent
   const navigateToPrevPokemon = () => {
     const currentIndex = pokemons.indexOf(selectedPokemon);
-    const prevIndex = (currentIndex - 1 + pokemons.length) % pokemons.length; // Si c'est le premier Pokémon, va au dernier
+    const prevIndex = (currentIndex - 1 + pokemons.length) % pokemons.length; 
     navigate(`/pokemon/${pokemons[prevIndex].names[language]}`);
   };
 
@@ -78,12 +74,11 @@ const PokemonDetail = ({ pokemons, types }) => {
           width: '350px',
           transition: 'transform 0.3s ease, box-shadow 0.3s ease',
           '&:hover': {
-            transform: 'scale(1.05)', // Animation au survol
+            transform: 'scale(1.05)', 
             boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.2)',
           },
         }}
       >
-        {/* Affichage de l'ID en haut à gauche */}
         <Typography sx={{ position: 'absolute', top: '10px', left: '10px', fontWeight: 'bold' }}>
           #{selectedPokemon.id}
         </Typography>

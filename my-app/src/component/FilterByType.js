@@ -38,14 +38,12 @@ const FilterByType = ({
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2 }}>
+    <Box sx={{ width: '500px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
       <Typography variant="h6" sx={{ marginBottom: 2 }}>
-        Filter by Type:
+        Filter by Type :
       </Typography>
-
-      {/* Section with Select */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-        <FormControl sx={{ width: '200px' }}>
+        <FormControl sx={{ width: '250px' }}>
           <InputLabel>Types</InputLabel>
           <Select
             multiple
@@ -55,7 +53,7 @@ const FilterByType = ({
             onOpen={() => setOpenSelect(true)}
             onClose={() => setOpenSelect(false)}
             renderValue={(selected) => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
                 {selected.map((typeId) => {
                   const type = typesData.find((t) => t.id === typeId);
                   return type ? (
@@ -74,9 +72,7 @@ const FilterByType = ({
           </Select>
         </FormControl>
       </Box>
-
-      {/* "Match All Selected Types" Switch */}
-      <Box sx={{ marginTop: 2, display: 'flex', alignItems: 'center' }}>
+      <Box sx={{display: 'flex', alignItems: 'center' }}>
         <Typography variant="subtitle2" sx={{ marginRight: 1 }}>
           Match All Selected Types
         </Typography>
